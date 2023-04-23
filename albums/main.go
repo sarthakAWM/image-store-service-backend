@@ -19,6 +19,7 @@ type albumData struct{
 }
 func main() {
   r := gin.Default()
+  r.Use(CORSMiddleware())
   r.Static("/albums", "./albums")
   
 // ALBUM API -----------------------------------------
@@ -54,11 +55,25 @@ r.PUT("/album/:albumName", renameAlbum)
 
 // //   upload Image API
   r.POST("/image/album/:albumName/upload", uploadImage)
-
-
-
-
+  
   r.Run() // listen and serve on 0.0.0.0:8080
+}
+
+
+
+func CORSMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+        c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+        c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+        if c.Request.Method == "OPTIONS" {
+            c.AbortWithStatus(204)
+            return
+        }
+
+        c.Next()
+    }
 }
 
 func getAllAlbumData(c *gin.Context){
