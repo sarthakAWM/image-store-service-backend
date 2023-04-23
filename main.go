@@ -8,7 +8,8 @@ import (
 	"net/http"
 	"encoding/json"
 	"image-store-service/utils"
-	// "time"
+	"github.com/gin-contrib/cors"
+	"time"
 	// "os"
 	// "image/png"
 )
@@ -20,6 +21,17 @@ type albumData struct{
 func main() {
   r := gin.Default()
   r.Static("/albums", "./albums")
+  r.Use(cors.New(cors.Config{
+    AllowOrigins:     []string{"*"},
+    AllowMethods:     []string{"*"},
+    AllowHeaders:     []string{"*"},
+    ExposeHeaders:    []string{"*"},
+    AllowCredentials: false,
+    AllowOriginFunc: func(origin string) bool {
+      return origin == "https://github.com"
+    },
+    MaxAge: 12 * time.Hour,
+  }))
   
 // ALBUM API -----------------------------------------
 
